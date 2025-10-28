@@ -60,7 +60,7 @@ No repositório do grupo, incluir:
 **Repositório:** entregue via GitHub Classroom (um repositório por grupo) e um PDF do markdown final no Moodle.
 
 
-1) Comportamento observado no código: O objetivo do código (sem a race condition) é contar quantas vezes cada LED acendeu. Contudo, observa-se perda de precisão na contagem, que conta 4 ciclos no lugar de 2 a cada registro de quatro ciclos. Além disso, nota-se que o código deveria acender um Led vermelho e, após 1000 ms, um led verde. Porém, eles acendem ao mesmo tempo, o que também explica a perda de precisão na contagem.
+1) Comportamento observado no código: O objetivo do código (sem a race condition) é contar quantas vezes cada LED acendeu. Contudo, observa-se perda de precisão na contagem, que conta 3 ciclos no lugar de 4 a cada registro de quatro ciclos. 
 
 A ocorrência da race condition pode ser observada nas seguintes linhas de código: int temp = contador_compartilhado;  // 1️⃣ leitura
 temp++;                             // 2️⃣ modificação
@@ -82,7 +82,7 @@ Cenário 2: Interferência por atraso artificial (k_busy_wait)
 |----------------|---------------|------------------|------------------------|
 | 1 | contador_compartilhado = 0| Aumentar o k_busy_wait() de uma thread e executar ambas| Maior chance de threads sobrepondo leitura/escrita; contador final < 2|
 | 2 | contador_compartilhado = 5; Thread A entra em k_busy_wait enquanto Thread B lê o valor| Observar saída no terminal e LEDs| Contador final pode ser menor que 7, valores duplicados impressos|
-| 3 | contador_compartilhado = 10; Executar 5 ciclos de cada thread com atrasos longos| Medir inconsistência entre contador e número de incrementos | Incrementos podem ser “perdidos”, resultado final menor que 20|
+| 3 | contador_compartilhado = 10; Executar 5 ciclos de cada thread com atrasos longos| Medir inconsistência entre contador e número de incrementos | Incrementos podem ser perdidos, resultado final menor que 20|
 
 Cenário 3: Efeito do atraso artificial (k_busy_wait)
 
@@ -91,3 +91,27 @@ Cenário 3: Efeito do atraso artificial (k_busy_wait)
 | 1 | contador_compartilhado = 0; k_busy_wait aumentado para 5000 μs| Executar Thread A e B simultaneamente| Maior chance de threads sobrepondo a leitura/escrita; contador final < 2|
 | 2 | contador_compartilhado = 10; Thread B inicia antes de Thread A terminar k_busy_wait | Observar saída no terminal| Contador final incorreto, duplicação de valores impressos|
 | 3 | contador_compartilhado = 20; Executar 5 ciclos| Medir inconsistência entre o contador e número de ciclos | Incrementos perdidos, resultado final menor que 30|
+
+3)  Cenário 1: Interferência simultânea de threads
+
+| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
+|----------------|---------------|------------------|------------------------|
+| 1 | Contador_compartilhado = 0 | Forçar que Thread A e B leiam o contador quase ao mesmo tempo | Contador final = 2; incrementos corretos, sem valores repetidos|
+| 2 | Contador_compartilhado = 5| Permitir que Thread A seja interrompida após ler e antes de escrever; Thread B executa completamente| Contador final = 7; cada thread incrementa exatamente uma vez |
+| 3 | Contador_compartilhado = 10 | Executar múltiplos ciclos rápidos, sem delay entre threads | Contador final = 20; incrementos corretos, sem perda de contagem|
+
+Cenário 2: Interferência por atraso artificial (k_busy_wait)
+
+| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
+|----------------|---------------|------------------|------------------------|
+| 1 | contador_compartilhado = 0| Aumentar o k_busy_wait() de uma thread e executar ambas|Contador final = 2; mesmo com atraso, a exclusão mútua garante incrementos corretos|
+| 2 | contador_compartilhado = 5; Thread A entra em k_busy_wait enquanto Thread B lê o valor| Observar saída no terminal e LEDs| Contador final = 7; sem conflito, cada thread incrementa uma vez|
+| 3 | contador_compartilhado = 10; Executar 5 ciclos de cada thread com atrasos longos| Medir inconsistência entre contador e número de incrementos | Contador final = 20; incrementos corretos mesmo com janela crítica longa|
+
+Cenário 3: Efeito do atraso artificial (k_busy_wait)
+
+| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
+|----------------|---------------|------------------|------------------------|
+| 1 | contador_compartilhado = 0; k_busy_wait aumentado para 5000 μs| Executar Thread A e B simultaneamente| Contador final = 2; sem race condition, cada incremento é seguro|
+| 2 | contador_compartilhado = 10; Thread B inicia antes de Thread A terminar k_busy_wait | Observar saída no terminal| Contador final = 12; incrementos corretos apesar do atraso|
+| 3 | contador_compartilhado = 20; Executar 5 ciclos| Medir inconsistência entre o contador e número de ciclos | Contador final = 30; sem perda de incrementos|
