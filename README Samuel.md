@@ -77,11 +77,12 @@ Elas tentam incrementar o contador, mas como duas threads fazem isso ao mesmo te
 
 2) Cenário 1: Interferência simultânea de threads
 
-| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
-|----------------|---------------|------------------|------------------------|
-| 1 | Contador_compartilhado = 0 | FIniciar Thread A e Thread B quase simultaneamente, cada uma com 1 incremento| O valor final pode ser 1 ou 2, dependendo de qual thread escreve primeiro|
-| 2 | Contador_compartilhado = 5| Permitir que Thread A seja interrompida após ler e antes de escrever; Thread B executa completamente| O contador final pode permanecer em 6, não 7 |
-| 3 | Contador_compartilhado = 10 | Executar múltiplos ciclos rápidos, sem delay entre threads | Alguns incrementos podem ser perdidos; contador final < valor esperado teórico|
+| Caso de Teste | Pré-condição                 | Etapas de Teste                                                              | Pós-condição Esperada                                                     |
+| ------------- | ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1             | `contador_compartilhado = 0` | Iniciar Thread A e Thread B quase simultaneamente, cada uma com 1 incremento | O valor final pode ser 1 ou 2, dependendo de qual thread escreve primeiro |
+| 2             | `contador_compartilhado = 1` | Executar Thread A até ler o valor, pausar, permitir que Thread B complete    | O valor final pode ser 2 em vez de 3                                      |
+| 3             | `contador_compartilhado = 2` | Executar Thread A e B sem delay e contar 10 incrementos cada                 | Alguns incrementos podem ser perdidos; contador final < 22                |
+
 
 Cenário 2: Interferência por atraso artificial (k_busy_wait)
 
