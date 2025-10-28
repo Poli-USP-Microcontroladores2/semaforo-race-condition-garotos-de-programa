@@ -86,10 +86,11 @@ Elas tentam incrementar o contador, mas como duas threads fazem isso ao mesmo te
 
 Tabela 2: Teste com delays variados
 
-Caso de Teste	Pré-condição	Etapas de Teste	Pós-condição Esperada
-1	contador_compartilhado = 0	Adicionar k_busy_wait(100) em Thread A, iniciar Thread B imediatamente	Contador final menor que 2, simula atraso de thread
-2	contador_compartilhado = 5	Alternar execução de threads em intervalos de 50 microssegundos	Contador final pode não ser 7, incrementos podem se perder
-3	contador_compartilhado = 10	Remover todo delay e executar muitas iterações rapidamente	Resultado final sempre < valor esperado teórico
+| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
+|----------------|---------------|------------------|------------------------|
+| 1 | contador_compartilhado = 0| Adicionar k_busy_wait(100) em Thread A, iniciar Thread B imediatamente| Contador final menor que 2, simula atraso de thread|
+| 2 | contador_compartilhado = 5| Observar saída no terminal e LEDs| Contador final pode não ser 7, incrementos podem se perder|
+| 3 | contador_compartilhado = 10; Executar 5 ciclos de cada thread com atrasos longos| Medir inconsistência entre contador e número de incrementos | Incrementos podem ser perdidos, resultado final menor que 20|
 
 Tabela 3: Teste com múltiplas threads
 
