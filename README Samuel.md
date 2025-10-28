@@ -75,7 +75,7 @@ contador_compartilhado = temp + 1;
 Elas tentam incrementar o contador, mas como duas threads fazem isso ao mesmo tempo, podem sobrescrever o valor uma da outra.
 
 
-2) Cenário 1: Interferência simultânea de threads
+2) Tabela 1: Verificação de incremento único
 
 | Caso de Teste | Pré-condição                 | Etapas de Teste                                                              | Pós-condição Esperada                                                     |
 | ------------- | ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -84,21 +84,19 @@ Elas tentam incrementar o contador, mas como duas threads fazem isso ao mesmo te
 | 3             | `contador_compartilhado = 2` | Executar Thread A e B sem delay e contar 10 incrementos cada                 | Alguns incrementos podem ser perdidos; contador final < 22                |
 
 
-Cenário 2: Interferência por atraso artificial (k_busy_wait)
+Tabela 2: Teste com delays variados
 
-| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
-|----------------|---------------|------------------|------------------------|
-| 1 | contador_compartilhado = 0| Aumentar o k_busy_wait() de uma thread e executar ambas| Maior chance de threads sobrepondo leitura/escrita; contador final < 2|
-| 2 | contador_compartilhado = 5; Thread A entra em k_busy_wait enquanto Thread B lê o valor| Observar saída no terminal e LEDs| Contador final pode ser menor que 7, valores duplicados impressos|
-| 3 | contador_compartilhado = 10; Executar 5 ciclos de cada thread com atrasos longos| Medir inconsistência entre contador e número de incrementos | Incrementos podem ser perdidos, resultado final menor que 20|
+Caso de Teste	Pré-condição	Etapas de Teste	Pós-condição Esperada
+1	contador_compartilhado = 0	Adicionar k_busy_wait(100) em Thread A, iniciar Thread B imediatamente	Contador final menor que 2, simula atraso de thread
+2	contador_compartilhado = 5	Alternar execução de threads em intervalos de 50 microssegundos	Contador final pode não ser 7, incrementos podem se perder
+3	contador_compartilhado = 10	Remover todo delay e executar muitas iterações rapidamente	Resultado final sempre < valor esperado teórico
 
-Cenário 3: Efeito do atraso artificial (k_busy_wait)
+Tabela 3: Teste com múltiplas threads
 
-| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
-|----------------|---------------|------------------|------------------------|
-| 1 | contador_compartilhado = 0; k_busy_wait aumentado para 5000 μs| Executar Thread A e B simultaneamente| Maior chance de threads sobrepondo a leitura/escrita; contador final < 2|
-| 2 | contador_compartilhado = 10; Thread B inicia antes de Thread A terminar k_busy_wait | Observar saída no terminal| Contador final incorreto, duplicação de valores impressos|
-| 3 | contador_compartilhado = 20; Executar 5 ciclos| Medir inconsistência entre o contador e número de ciclos | Incrementos perdidos, resultado final menor que 30|
+Caso de Teste	Pré-condição	Etapas de Teste	Pós-condição Esperada
+1	contador_compartilhado = 0	Criar 3 threads simultâneas, cada uma com 1 incremento	Contador final pode ser 1, 2 ou 3
+2	contador_compartilhado = 3	Intercalar threads com delays curtos diferentes	Alguns incrementos podem ser perdidos; resultado final < 6
+3	contador_compartilhado = 5	Executar 5 threads com 100 incrementos cada, sem proteção	Muitos incrementos perdidos; valor final significativamente menor que esperado
 
 3)  Cenário 1: Interferência simultânea de threads
 
