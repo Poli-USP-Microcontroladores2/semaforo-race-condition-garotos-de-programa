@@ -100,13 +100,14 @@ Tabela 3: Teste com múltiplas threads
 | 2 | `contador_compartilhado = 3`| Intercalar threads com delays curtos diferentes| Alguns incrementos podem ser perdidos; resultado final < 6|
 | 3 | `contador_compartilhado = 5`|Executar 5 threads com 100 incrementos cada, sem proteção | Muitos incrementos perdidos; valor final significativamente menor que esperado|
 
-3)  Cenário 1: Interferência simultânea de threads
+3)  Tabela 1: Verificação de incremento único
 
-| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
-|----------------|---------------|------------------|------------------------|
-| 1 | Contador_compartilhado = 0 | Forçar que Thread A e B leiam o contador quase ao mesmo tempo | Contador final = 2; incrementos corretos, sem valores repetidos|
-| 2 | Contador_compartilhado = 5| Permitir que Thread A seja interrompida após ler e antes de escrever; Thread B executa completamente| Contador final = 7; cada thread incrementa exatamente uma vez |
-| 3 | Contador_compartilhado = 10 | Executar múltiplos ciclos rápidos, sem delay entre threads | Contador final = 20; incrementos corretos, sem perda de contagem|
+| Caso de Teste | Pré-condição                 | Etapas de Teste                                                              | Pós-condição Esperada                                                     |
+| ------------- | ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1             | `contador_compartilhado = 0` | Iniciar Thread A e Thread B quase simultaneamente, cada uma com 1 incremento | O valor final será sempre 2, pois o mutex garante exclusão mútua |
+| 2             | `contador_compartilhado = 1` | Executar Thread A até ler o valor, pausar, permitir que Thread B complete    | O valor final será sempre 3, nenhum incremento é perdido                                      |
+| 3             | `contador_compartilhado = 2` | Executar Thread A e B sem delay e contar 10 incrementos cada                 | O valor final será sempre 22, todos os incrementos são contabilizados                |
+
 
 Cenário 2: Interferência por atraso artificial (k_busy_wait)
 
