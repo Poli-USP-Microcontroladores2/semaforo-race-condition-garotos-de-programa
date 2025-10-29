@@ -94,10 +94,11 @@ Tabela 2: Teste com delays variados
 
 Tabela 3: Teste com múltiplas threads
 
-Caso de Teste	Pré-condição	Etapas de Teste	Pós-condição Esperada
-1	contador_compartilhado = 0	Criar 3 threads simultâneas, cada uma com 1 incremento	Contador final pode ser 1, 2 ou 3
-2	contador_compartilhado = 3	Intercalar threads com delays curtos diferentes	Alguns incrementos podem ser perdidos; resultado final < 6
-3	contador_compartilhado = 5	Executar 5 threads com 100 incrementos cada, sem proteção	Muitos incrementos perdidos; valor final significativamente menor que esperado
+| Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
+|----------------|---------------|------------------|------------------------|
+| 1 | `contador_compartilhado = 0`| Criar 3 threads simultâneas, cada uma com 1 incremento| Contador final pode ser 1, 2 ou 3|
+| 2 | `contador_compartilhado = 3`| Intercalar threads com delays curtos diferentes| Alguns incrementos podem ser perdidos; resultado final < 6|
+| 3 | `contador_compartilhado = 5`|Executar 5 threads com 100 incrementos cada, sem proteção | Muitos incrementos perdidos; valor final significativamente menor que esperado|
 
 3)  Cenário 1: Interferência simultânea de threads
 
