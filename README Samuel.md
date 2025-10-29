@@ -100,7 +100,7 @@ Tabela 3: Teste com múltiplas threads
 | 2 | `contador_compartilhado = 3`| Intercalar threads com delays curtos diferentes| Alguns incrementos podem ser perdidos; resultado final < 6|
 | 3 | `contador_compartilhado = 5`|Executar 5 threads com 100 incrementos cada, sem proteção | Muitos incrementos perdidos; valor final significativamente menor que esperado|
 
-3)  Tabela 1: Verificação de incremento único
+3)  Tabela 1 (código corrigido): Verificação de incremento único
 
 | Caso de Teste | Pré-condição                 | Etapas de Teste                                                              | Pós-condição Esperada                                                     |
 | ------------- | ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -109,18 +109,18 @@ Tabela 3: Teste com múltiplas threads
 | 3             | `contador_compartilhado = 2` | Executar Thread A e B sem delay e contar 10 incrementos cada                 | O valor final será sempre 22, todos os incrementos são contabilizados                |
 
 
-Cenário 2: Interferência por atraso artificial (k_busy_wait)
+Tabela 2 (código corrigido): Teste com delays variados
 
 | Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
 |----------------|---------------|------------------|------------------------|
-| 1 | contador_compartilhado = 0| Aumentar o k_busy_wait() de uma thread e executar ambas|Contador final = 2; mesmo com atraso, a exclusão mútua garante incrementos corretos|
-| 2 | contador_compartilhado = 5; Thread A entra em k_busy_wait enquanto Thread B lê o valor| Observar saída no terminal e LEDs| Contador final = 7; sem conflito, cada thread incrementa uma vez|
-| 3 | contador_compartilhado = 10; Executar 5 ciclos de cada thread com atrasos longos| Medir inconsistência entre contador e número de incrementos | Contador final = 20; incrementos corretos mesmo com janela crítica longa|
+| 1 | `contador_compartilhado = 0`| Adicionar k_busy_wait(100) em Thread A, iniciar Thread B imediatamente| Contador final = 2 × NUM_INCREMENTOS (mutex evita perda de incrementos)|
+| 2 | `contador_compartilhado = 5`| Alternar execução de threads em intervalos de 50 microssegundos| Contador final = 5 + 2 × NUM_INCREMENTOS (mutex garante consistência)|
+| 3 | `contador_compartilhado = 10`| Remover todo delay e executar muitas iterações rapidamente | Contador final = 10 + 2 × NUM_INCREMENTOS (não há mais race condition)|
 
-Cenário 3: Efeito do atraso artificial (k_busy_wait)
+Tabela 3 (código corrigido): Teste com múltiplas threads
 
 | Caso de Teste | Pré-condição | Etapas de Teste | Pós-condição Esperada |
 |----------------|---------------|------------------|------------------------|
-| 1 | contador_compartilhado = 0; k_busy_wait aumentado para 5000 μs| Executar Thread A e B simultaneamente| Contador final = 2; sem race condition, cada incremento é seguro|
-| 2 | contador_compartilhado = 10; Thread B inicia antes de Thread A terminar k_busy_wait | Observar saída no terminal| Contador final = 12; incrementos corretos apesar do atraso|
-| 3 | contador_compartilhado = 20; Executar 5 ciclos| Medir inconsistência entre o contador e número de ciclos | Contador final = 30; sem perda de incrementos|
+| 1 | `contador_compartilhado = 0`| Criar 3 threads simultâneas, cada uma com 1 incremento| Contador final = 3 (mutex garante que nenhum incremento seja perdido)|
+| 2 | `contador_compartilhado = 3`| Intercalar threads com delays curtos diferentes| Contador final = 3 + número total de incrementos das threads (incrementos consistentes)|
+| 3 | `contador_compartilhado = 5`|Executar 5 threads com 100 incrementos cada, sem proteção | Contador final = 5 + (5 × 100) = 505 (todos os incrementos aplicados corretamente)|
