@@ -100,6 +100,15 @@ Tabela 3: Teste com múltiplas threads
 | 2 | `contador_compartilhado = 3`| Intercalar threads com delays curtos diferentes| Alguns incrementos podem ser perdidos; resultado final < 6|
 | 3 | `contador_compartilhado = 5`|Executar 5 threads com 100 incrementos cada, sem proteção | Muitos incrementos perdidos; valor final significativamente menor que esperado|
 
+O código corrigiu a race condition usando um mutex:
+
+Mutex criado e inicializado: struct k_mutex contador_mutex; k_mutex_init(&contador_mutex);
+
+Seção crítica protegida: antes de incrementar contador_compartilhado, a thread faz k_mutex_lock(&contador_mutex) e depois libera com k_mutex_unlock(&contador_mutex).
+
+Só uma thread por vez consegue alterar o contador, evitando conflito.
+
+
 3)  Tabela 1 (código corrigido): Verificação de incremento único
 
 | Caso de Teste | Pré-condição                 | Etapas de Teste                                                              | Pós-condição Esperada                                                     |
